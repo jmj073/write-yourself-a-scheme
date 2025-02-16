@@ -70,3 +70,52 @@ let main argv =
     0 // return an integer exit code
 ```
 
+## Testing
+
+.NET에는 매우 간단한 단위 테스트 시스템이 있다. 간단한 예를 살펴보자.
+
+1. `dotnet add package` 명령을 사용하여 필요한 패키지를 추가.
+
+   ```
+   dotnet add package FSUnit
+   dotnet add package NUnit
+   dotnet add package NUnit3TestAdapter
+   dotnet add package Microsoft.Net.Test.Sdk
+   ```
+
+2. `Program.fs`에 다음 코드 추가.
+
+   ```F#
+   open NUnit.Framework
+   open FsUnit
+   
+   [<Test>]
+   let ``test hello`` () =
+       5 + 1 |> should equal 6
+   ```
+
+   + **함수 이름**: 함수 이름을 `test hello`로 지었다. F#에서 이름에는 공백이 포함될 수 있으며 더블 `를 사용하여 묶어야 한다.
+   + **인수를 취하지 않는 함수**: 이런 함수의 경우, 값과 구별하기 위해 이름 뒤에 명시적 `()`를 추가해야 한다.
+   + **pipe 연산자**(`|>`): 왼쪽 표현식의 결과를 오른쪽 함수에 전달한다. 따라서`5 + 1 |> should equal 6`은`should equal 6 (5 + 1)`과 같다.  
+
+3. 테스트를 실행.
+
+   ```
+   dotnet test
+   ```
+
+### Exercises
+
+**1.** 테스트를 실패하도록 수정한 후 실행하고 출력을 확인하자.
+
+```F#
+[<Test>]
+let ``test hello`` () =
+    5 + 2 |> should equal 6
+```
+
+```
+테스트 요약: 합계: 1, 실패: 1, 성공: 0, 건너뜀: 0, 기간: 0.9초
+1 오류와 1 경고와 함께 실패 빌드(2.7초)
+```
+
