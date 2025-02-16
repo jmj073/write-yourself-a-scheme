@@ -119,3 +119,15 @@ let ``test hello`` () =
 1 오류와 1 경고와 함께 실패 빌드(2.7초)
 ```
 
+## Parsing
+
+### Writing a Simple Parser
+
+```F#
+let readExpr input =
+    match run pSymbol input with
+    | Failure (_, err, _) -> sprintf "No match: %s"  (err.ToString())
+    | Success _ -> "Found value"
+```
+
++ **match**: `match ... with` construction은 pattern matching의 한 예이다. 나중에 살펴보겠다.
