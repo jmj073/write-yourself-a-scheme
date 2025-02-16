@@ -131,3 +131,16 @@ let readExpr input =
 ```
 
 + **match**: `match ... with` construction은 pattern matching의 한 예이다. 나중에 살펴보겠다.
+
+### Whitespace
+
+```F#
+let readExpr input =
+    match run (spaces >>. pSymbol) input with
+    | Failure (_, err, _) -> sprintf "No match: %s"  (err.ToString())
+    | Success _ -> "Found value"
+```
+
++ `>>.`: `FParsc`가 제공하는 결합자. 파서 `p1 >>. p2`는 `p1`과 `p2`를 순서대로 파싱하고 `p2`의 결과를 반환한다.
+  + `.>>`: `p1`과 `p2`를 순서대로 파싱하지만 `p2` 대신 `p1`의 결과를 반환한다.
+  + 두 연산자를 `p1 >>. p2 .>> p3`에 결합하면 `p1`, `p2`,`p3`을 순서대로 파싱하고 `p2`의 결과를 반환한다.

@@ -9,7 +9,7 @@ type Parser<'t> = Parser<'t, LispState>
 let pSymbol: Parser<_> = anyOf "!#$%&|*+-/:<=>?@^_~"
 
 let readExpr input =
-    match run pSymbol input with
+    match run (spaces >>. pSymbol) input with
     | Failure (_, err, _) -> sprintf "No match: %s"  (err.ToString())
     | Success _ -> "Found value"
 

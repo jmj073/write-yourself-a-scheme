@@ -2,7 +2,7 @@
   "profiles": {
     "write-yourself-a-scheme": {
       "commandName": "Project",
-      "commandLineArgs": "a"
+      "commandLineArgs": "\"    abc\""
     },
     "WSL": {
       "commandName": "WSL2",
