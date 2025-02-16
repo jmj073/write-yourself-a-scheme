@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "write-yourself-a-scheme": {
+      "commandName": "Project",
+      "commandLineArgs": "3 4"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

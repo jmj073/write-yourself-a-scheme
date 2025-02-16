@@ -1,0 +1,72 @@
+# Write Yourself a Scheme in 48 hours using F#!
+
+[참고](https://write-yourself-a-scheme.pangwa.com/#/)
+
+## First Steps: Compiling and running
+
+```F#
+open System
+
+[<EntryPoint>]
+let main argv =
+    let who = if argv.Length = 0 then "F#" else argv.[0]
+    printfn "Hello world from %s" who
+    0 // return an integer exit code
+```
+
++ `open`: 첫 번째 줄은 `System` 모듈을열도록 지정
+
++  **attribute**: F#에서 `[<...>]` 형태의 annotation을 attribute라고 한다. [attribute doc](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/attributes).
+  + 모든 F# 프로그램에는 attribute로 지정된 진입점(`[<EntryPoint>]`)이 하나 있어야 한다. 
+  + attribute를 사용하면 프로그래밍 구성에 메타데이터를 적용할 수 있다.
++ `let main argv =`: type declaration이다. `main`이 인수 하나를 취하는 함수임을 나타낸다.
+  + F#에서 함수는 일반적으로 변수로 정의된다. 둘다 `let` 키워드를 사용한다.
+  + `argv`: 프로그팸을 실행할때 사용자가 전달한 인수 배열이다.  
++ **type inference**: F#에는 매우 강력한 type inference(타입 추론) 기능이 있으며. 일반적으로 컨텍스트에 따라 타입을 추론한다. 대부분의 경우 F# 프로그램을 작성하는 동안 형식을 명시적으로 지정할 필요가 없다. 정말 필요한 경우 명시적 타입 annotation을 적용할 수 있다.
+  +  `argv` 타입이나 `main` 함수의 반환 값 타입을 지정하지 않은 것을 알 수 있다.
++ **등호**: F#에서 같음은 단일 `=`를 사용하여 검사하며 `==`는 사용하지 않는다.
++ `printfn`:
+  + `System` 모듈에서 제공한 콘솔에 텍스트를 쓰기 위해 `printfn` 함수를 사용한다.
+  + F#은 순수한 함수형 프로그래밍 언어가 아니며, Haskell과 달리 F#에서 IO 작업을 수행하기 위해 IO 모나드를 제공할 필요가 없다.
+
+### Exercises
+
+**1.** 명령줄에서 두 개의 인수를 읽고 두 인수를 모두 사용하여 메시지를 인쇄하도록 프로그램을 변경하자.
+
+```F#
+open System
+
+[<EntryPoint>]
+let main argv =
+    let where = if argv.Length = 0 then "world" else argv.[0]
+    let who = if argv.Length < 2 then "F#" else argv.[1]
+    printfn "Hello %s from %s" where who
+    0 // return an integer exit code
+```
+
+**2.** 두 인수에 대해 간단한 산술 연산을 수행하고 결과를 출력하도록 프로그램을 변경하자. `Int32.tryParse`를 사용하여 문자열을 숫자로 변환하고 `sprintfn` 함수를 사용하여 문자열로 변환할 수 있다.
+
+```F#
+open System
+
+[<EntryPoint>]
+let main argv =
+    let a = argv.[0] |> int
+    let b = argv.[1] |> int
+    let res = sprintf "%i" (a + b)
+    printfn "result: %s" res
+    0 // return an integer exit code
+```
+
+**3.** `ㄴConsole.ReadLine()`은 콘솔에서 줄을 읽고 문자열로 반환한다. 프로그램을 변경하여 이름을 묻고 이름을 읽은 다음 명령줄 값 대신 해당 이름을 인쇄하자.
+
+```F#
+open System
+
+[<EntryPoint>]
+let main argv =
+    let who = Console.ReadLine()
+    printfn "Hello world from %s" who
+    0 // return an integer exit code
+```
+
