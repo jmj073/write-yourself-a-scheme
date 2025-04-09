@@ -339,3 +339,76 @@ Expecting: any char in ‘!#$%&|*+-/:<=>?@^_~’, integer number (64-bit, signed
 letter or '"'
 ```
 
+
+
+### Refactor the code
+
+코드를 리팩토링하고 타입 정의를 별도의 `LispTypes.fs`로, 파싱 관련 내용은 `Parser.fs`로 분리해 보자.
+
+**LispTypes.fs**
+
+```F#
+module LispTypes
+
+type LispVal =
+    | LispAtom of string
+    | ListList of List<LispVal>
+    | LispDottedList of List<LispVal> * LispVal
+    | LispNumber of int64
+    | LispString of string
+    | LispBool of bool
+```
+
+**Parser.fs**
+
+```F#
+module Parser
+open NUnit.Framework
+open FsUnit
+open FParsec
+open LispTypes
+
+type LispState = unit // doesn't have to be unit, of course
+type Parser<'t> = Parser<'t, LispState>
+
+let pSymbol: Parser<_> = anyOf "!#$%&|*+-/:<=>?@^_~"
+let parseString: Parser<LispVal> =
+      between (pstring "\"") (pstring "\"") (manyChars (noneOf (Seq.toList "\"")))
+            |>> LispString
+let parseAtom =
+    pipe2 (letter <|> pSymbol)
+          (manyChars (letter <|> digit <|> pSymbol))
+          (fun s rest ->
+                let atom = sprintf "%c%s" s rest
+                match atom with
+                | "#t" -> LispBool true
+                | "#f" -> LispBool false
+                | _ -> LispAtom atom)
+
+let parseNumber: Parser<_> = pint64 |>> LispNumber
+
+let parseExpr = parseAtom <|>
+                parseString <|>
+                parseNumber
+
+let readExpr input =
+    match run parseExpr input with
+    | Failure (_, err, _) -> sprintf "No match: %s"  (err.ToString())
+    | Success _ -> "Found value"
+
+```
+
+메인 파일 `Program.fs`로 돌아가서 모든 `LispVal` 및 파싱 코드를 제거하고 한 줄을 추가한다.
+
+```F#
+open Parser
+```
+
+F# 프로젝트 파일에 `LispTypes.fs`와 `Parser.fs`를 추가해야 한다. `.fsproj` 파일을 열고 `ItemGroup` 섹션에 두 줄을 추가하자.
+
+```F#
+    <Compile Include="LispTypes.fs" />
+    <Compile Include="Parser.fs" />
+```
+
+두 줄은 `Program.fs` 앞에 위치해야 하며, 그 순서는 컴파일 순서와 같아야 한다. F#에서는 파일 순서가 중요하며, 파일은 그보다 먼저 컴파일된 파일만 가져올 수 있다.
