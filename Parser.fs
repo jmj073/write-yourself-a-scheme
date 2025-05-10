@@ -35,3 +35,21 @@ let readExpr input =
     | Failure (_, err, _) -> sprintf "No match: %s"  (err.ToString())
     | Success _ -> "Found value"
 
+
+let checkResult v r = match r with
+                      | ParserResult.Success(e, _, _) -> e |> should equal v
+                      | _ -> Assert.Fail "parse failed"
+
+let checkParseFailed r = match r with
+                         | ParserResult.Success(_, _, _) -> Assert.Fail("Expect parse fail")
+                         | _ -> ()
+
+[<Test>]
+let ``parse atom test`` () =
+  run parseAtom "#t" |> checkResult (LispBool true)
+  run parseAtom "#f" |> checkResult (LispBool false)
+  run parseAtom "#test" |> checkResult (LispAtom "#test")
+  run parseAtom "test" |> checkResult (LispAtom "test")
+  run parseAtom "+" |> checkResult (LispAtom "+")
+  run parseAtom "1" |> checkParseFailed
+

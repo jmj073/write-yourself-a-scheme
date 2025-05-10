@@ -412,3 +412,34 @@ F# 프로젝트 파일에 `LispTypes.fs`와 `Parser.fs`를 추가해야 한다. 
 ```
 
 두 줄은 `Program.fs` 앞에 위치해야 하며, 그 순서는 컴파일 순서와 같아야 한다. F#에서는 파일 순서가 중요하며, 파일은 그보다 먼저 컴파일된 파일만 가져올 수 있다.
+
+### Testing
+
+`Parser.fs`의 끝에 아래 테스트 케이스를 추가하자.
+
+```F#
+let checkResult v r = match r with
+                      | ParserResult.Success(e, _, _) -> e |> should equal v
+                      | _ -> Assert.Fail "parse failed"
+
+let checkParseFailed r = match r with
+                         | ParserResult.Success(_, _, _) -> Assert.Fail("Expect parse fail")
+                         | _ -> ()
+
+[<Test>]
+let ``parse atom test`` () =
+  run parseAtom "#t" |> checkResult (LispBool true)
+  run parseAtom "#f" |> checkResult (LispBool false)
+  run parseAtom "#test" |> checkResult (LispAtom "#test")
+  run parseAtom "test" |> checkResult (LispAtom "test")
+  run parseAtom "+" |> checkResult (LispAtom "+")
+  run parseAtom "1" |> checkParseFailed
+```
+
+```
+$ dotnet test
+```
+
+#### Exercises
+
+1. 문자열은 R5RS를 완전히 준수하지 않고 있다. 문자열 내 내부 따옴표의 이스케이프를 지원하지 않기 때문이다. `parseString`을 변경하여 `\"`가 문자열을 종료하는 대신 리터럴 따옴표 문자를 제공하도록 하자. `noneOf "\""`를 따옴표가 아닌 문자 또는 백슬래시 뒤에 따옴표를 사용하는 새로운 파서 동작으로 대체하는 것이 좋습니다.
